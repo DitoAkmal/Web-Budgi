@@ -1,26 +1,173 @@
+
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+html { scroll-behavior: smooth; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(270deg,#e8a178,#BD9AC4,#BD9AC4,#e8a178);
+  min-height: 100%;
+}
+
+.section-bg{
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+@keyframes gradientMove{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+.section-bg::before{
+  background-size:200% 200%;
+  animation:gradientMove 18s ease infinite;
+}
+
+.section-bg::after{
+  filter: blur(80px);
+  opacity:0.7;
+}
+
+.home-bg{
+  background: linear-gradient(270deg,#e8a178,#BD9AC4,#BD9AC4,#e8a178);
+  background-size: 600% 600%;
+  animation: gradientMove 30s ease infinite;
+}
+
+.about-bg{
+  background: linear-gradient(270deg,#e8a178,#BD9AC4,#BD9AC4,#e8a178);
+  background-size: 600% 600%;
+  animation: gradientMove 30s ease infinite;
+}
+
+.features-gradient {
+  background: linear-gradient(270deg,#e8a178,#BD9AC4,#BD9AC4,#e8a178);
+  background-size: 600% 600%;
+  animation: gradientMove 30s ease infinite;
+}
+
+.contact-gradient {
+  background: linear-gradient(270deg,#e8a178,#BD9AC4,#BD9AC4,#e8a178);
+  background-size: 600% 600%;
+  animation: gradientMove 30s ease infinite;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.floating-box {
+  backdrop-filter: blur(20px);
+  background: rgba(255,255,255,0.15);
+  border-radius: 28px;
+  padding: 60px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(60px);
+  transition: all .8s ease;
+}
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.parallax {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.parallax span {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(80px);
+  opacity: .35;
+}
+
+@keyframes fade {
+  from { opacity:0; transform:scale(.95); }
+  to { opacity:1; transform:scale(1); }
+}
+
+.animate-fade {
+  animation: fade .25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity:0; transform:translateY(-10px);}
+  to { opacity:1; transform:translateY(0);}
+}
+
+.animate-fadeIn {
+  animation: fadeIn .25s ease;
+}
+
+/*  Custom Scrollbar  */
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+background: linear-gradient(270deg,#E8D9EC,#BD9AC4,#BD9AC4,#e8a178);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    #E8D9EC,
+    #BD9AC4
+  );
+  border-radius: 20px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    #ffffff66,
+    #ffffff22
+  );
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #ffffff33 #050505;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.img-frame{
+  position:relative;
+  border-radius:24px;
+  overflow:hidden;
+  background:rgba(255,255,255,0.2);
+  backdrop-filter:blur(20px);
+  box-shadow:0 20px 50px rgba(0,0,0,0.15);
+}
+
+.img-frame img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+@keyframes scaleIn {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.3s ease-out;
 }
