@@ -1,23 +1,24 @@
+"use client";
 
-'use client';
 import { useEffect } from "react";
 
-export default function Reveal({children}){
+export default function useReveal() {
+  useEffect(() => {
+    const elements = document.querySelectorAll(".reveal");
 
-  useEffect(()=>{
-    const els=document.querySelectorAll(".reveal");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("active");
+          }
+        });
+      },
+      {
+        threshold: 0.2,
+      }
+    );
 
-    const obs=new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{
-        if(e.isIntersecting){
-          e.target.classList.add("active");
-        }
-      });
-    },{threshold:.2});
-
-    els.forEach(el=>obs.observe(el));
-    return()=>obs.disconnect();
-  },[]);
-
-  return children;
+    elements.forEach((el) => observer.observe(el));
+  }, []);
 }

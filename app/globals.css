@@ -4,10 +4,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(270deg,#e8a178,#BD9AC4,#BD9AC4,#e8a178);
-  min-height: 100%;
+  background: radial-gradient(circle at top, #caa6d4, #ffffff 60%);
 }
 
 .section-bg{
@@ -32,34 +29,76 @@ body {
   opacity:0.7;
 }
 
-.home-bg{
-  background: linear-gradient(270deg,#e8a178,#BD9AC4,#BD9AC4,#e8a178);
-  background-size: 600% 600%;
-  animation: gradientMove 30s ease infinite;
+.home-bg {
+  background: radial-gradient(circle at top, #caa6d4, #ffffff 60%);
 }
 
 .about-bg{
-  background: linear-gradient(270deg,#e8a178,#BD9AC4,#BD9AC4,#e8a178);
-  background-size: 600% 600%;
-  animation: gradientMove 30s ease infinite;
+  background: linear-gradient(180deg, #ffffff, #d7b6d9);
 }
 
-.features-gradient {
-  background: linear-gradient(270deg,#e8a178,#BD9AC4,#BD9AC4,#e8a178);
-  background-size: 600% 600%;
-  animation: gradientMove 30s ease infinite;
+.tutorial-bg{
+  background: linear-gradient(180deg, #ffffff, #d7b6d9);
 }
 
-.contact-gradient {
-  background: linear-gradient(270deg,#e8a178,#BD9AC4,#BD9AC4,#e8a178);
-  background-size: 600% 600%;
-  animation: gradientMove 30s ease infinite;
+.contact-bg {
+  background: linear-gradient(180deg, #d7b6d9, #ffffff);
 }
 
-@keyframes gradientMove {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+.features-bg {
+  background: linear-gradient(180deg, #d7b6d9, #ffffff);
+}
+
+.features-page {
+  padding: 60px 20px;
+  background: linear-gradient(180deg, #d8bfd8, #f3e5f5);
+  min-height: 100vh;
+}
+
+.title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.features-scroll {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-left: 20px;
+  scroll-snap-type: x mandatory;
+}
+
+.feature-card {
+  min-width: 320px;
+  height: 220px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #caa6d4;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+  scroll-snap-align: start;
+}
+
+.feature-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* mobile */
+@media (max-width: 768px) {
+  .feature-card {
+    min-width: 260px;
+    height: 180px;
+  }
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .floating-box {
@@ -170,4 +209,95 @@ html {
 
 .animate-scaleIn {
   animation: scaleIn 0.3s ease-out;
+}
+
+.menu-btn {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .menu-btn {
+    display: block;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background: white;
+    padding: 12px;
+    border-radius: 12px;
+    width: 180px;
+  }
+}
+
+.tutorial-page {
+  padding: 60px 20px;
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+
+.steps-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 50px;
+  gap: 20px;
+}
+
+.step-box {
+  flex: 1;
+  text-align: center;
+}
+
+.step-icon {
+  width: 90px;
+  height: 90px;
+  background: #d8bfd8;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px;
+  overflow: hidden;
+}
+
+.step-icon img {
+  width: 70%;
+}
+
+.step-box h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+
+.step-box p {
+  font-size: 13px;
+  color: #666;
+}
+
+/* garis antar step */
+.steps-container {
+  position: relative;
+}
+
+.steps-container::before {
+  content: "";
+  position: absolute;
+  top: 45px;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: #ccc;
+  z-index: 0;
+}
+
+/* mobile */
+@media (max-width: 768px) {
+  .steps-container {
+    flex-direction: column;
+  }
+
+  .steps-container::before {
+    display: none;
+  }
 }

@@ -29,10 +29,7 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-
+    const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -41,16 +38,14 @@ export default function Navbar() {
     <a
       href={`#${id}`}
       onClick={() => setMobileOpen(false)}
-      className={`relative transition-all duration-300 
-      ${active === id ? "text-white" : "text-white/70 hover:text-white"}
-      `}
+      className={`relative text-sm transition
+      ${active === id ? "text-white" : "text-white/70 hover:text-white"}`}
     >
       {id.charAt(0).toUpperCase() + id.slice(1)}
 
       <span
-        className={`absolute left-0 -bottom-1 h-[2px] bg-white transition-all duration-300
-        ${active === id ? "w-full" : "w-0 group-hover:w-full"}
-        `}
+        className={`absolute left-0 -bottom-1 h-[2px] bg-white transition-all
+        ${active === id ? "w-full" : "w-0 group-hover:w-full"}`}
       />
     </a>
   );
@@ -58,77 +53,65 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`
-        fixed top-0 left-0 w-full z-50 transition-all duration-500
-        px-6 md:px-10 py-4 flex justify-between items-center
+        className={`fixed top-0 left-0 w-full z-50 px-6 md:px-10 py-4 flex justify-between items-center transition
         ${scrolled
-            ? "bg-black/40 backdrop-blur-xl shadow-lg border-b border-white/10"
-            : "bg-transparent"}
-        `}
+            ? "bg-black/40 backdrop-blur-xl border-b border-white/10"
+            : "bg-transparent"}`}
       >
         <a href="#home" className="flex items-center gap-3">
-          <Image
-            src="/logo.png"
-            alt="Budgi Logo"
-            width={38}
-            height={38}
-            priority
-            className="rounded-md"
-          />
-          <span className="font-bold text-lg tracking-wide">
-            BUDGI
-          </span>
+          <Image src="/logo.png" alt="logo" width={38} height={38} />
+          <span className="font-bold text-lg">BUDGI</span>
         </a>
 
-        {/*  Desktop  */}
+        {/* desktop */}
         <div className="hidden md:flex items-center gap-8">
           {link("home")}
           {link("about")}
           {link("features")}
+          {link("tutorial")}
           {link("contact")}
 
           <button
             onClick={() => setOpenModal(true)}
-            className="
-              px-6 py-2 rounded-full 
-              bg-white text-black font-semibold
-              hover:scale-105 hover:shadow-xl transition-all duration-300"
+            className="px-5 py-2 rounded-full bg-white text-black text-sm"
           >
             Join Waitlist
           </button>
         </div>
 
-        {/* Mobile  */}
+        {/* mobile button */}
         <button
-          className="md:hidden"
+          className="md:hidden text-white"
           onClick={() => setMobileOpen(!mobileOpen)}
         >
-          {mobileOpen ? <X size={28} /> : <Menu size={28} />}
+          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </nav>
 
+      {/* mobile dropdown */}
       <div
-        className={`
-        fixed inset-0 bg-black/60 backdrop-blur-xl z-40
-        flex flex-col items-center justify-center gap-8 text-xl
-        transition-all duration-500
-        ${mobileOpen ? "opacity-100 visible" : "opacity-0 invisible"}
-        `}
+        className={`fixed top-20 left-0 right-0 z-40 transition-all duration-300
+        ${mobileOpen ? "opacity-50 visible" : "opacity-0 invisible"}`}
       >
-        {link("home")}
-        {link("about")}
-        {link("features")}
-        {link("contact")}
+        <div className="bg-black/95 backdrop-blur-xl px-6 py-6 flex flex-col gap-4 text-center border-t border-white/10">
+          
+          {link("home")}
+          {link("about")}
+          {link("features")}
+          {link("tutorial")}
+          {link("contact")}
 
-        <button
-          onClick={() => {
-            setOpenModal(true);
-            setMobileOpen(false);
-          }}
-          className="px-8 py-3 rounded-full bg-white text-black font-semibold"
-        >
-          Join Waitlist
-        </button>
+          <button
+            onClick={() => {
+              setOpenModal(true);
+              setMobileOpen(false);
+            }}
+            className="mt-2 px-5 py-2 rounded-full bg-white text-black text-sm"
+          >
+            Join Waitlist
+          </button>
+
+        </div>
       </div>
 
       <WaitlistModal
