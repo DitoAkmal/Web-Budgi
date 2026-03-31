@@ -13,7 +13,9 @@ export default function AboutSection() {
           <div className="grid grid-cols-2 gap-6">
 
             <div className="bg-[#D7B8D9]/80 border border-white/20 rounded-2xl p-4 backdrop-blur-md aspect-[4/4]">
-              <img src="/images/calender.png" 
+
+              <img src="/images/Calender.png" 
+
               className="w-full h-auto rounded-xl"/>
             </div>
 
