@@ -32,7 +32,7 @@ Record, organize, and control your money in a simple and practical way.
               rel="noopener noreferrer"
               className="px-8 py-3 rounded-full bg-black text-white font-semibold hover:scale-105 transition shadow-lg"
             >
-            Download
+            Download APK
             </a>
 
           <Link

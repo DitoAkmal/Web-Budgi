@@ -41,7 +41,7 @@ export default function TutorialSection() {
       <div className="relative max-w-6xl w-full mx-auto">
 
         {/* Garis */}
-        <div className="hidden md:block absolute border-t border-dashed border-black/40 top-[72px] left-[8%] w-[84%]" />
+        <div className="hidden md:block absolute border-t border-dashed border-black/40 top-[120px] left-[8%] w-[84%]" />
         {/* Steps */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-12 md:gap-0">
 
@@ -51,16 +51,16 @@ export default function TutorialSection() {
               className="flex flex-col items-center text-center relative z-10"
             >
               {/* Circle Image */}
-              <div className="w-32 h-32 md:w-36 md:h-36 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-lg border border-white/30 shadow-lg">
+              <div className="w-64 h-64 md:w-64 md:h-64 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-lg border border-white/30 shadow-lg">
                 <img
                   src={step.img}
                   alt="step"
-                  className="w-24 md:w-28"
+                  className="w-54 md:w-54"
                 />
               </div>
 
               {/* Text Box */}
-              <div className="mt-4 px-4 py-2 rounded-lg bg-white/40 border border-white/10">
+              <div className="mt-4 px-4 py-2 rounded-full bg-white/40 border border-white/10">
                 <p className="text-sm font-semibold md:text-base text-black">
                   {step.title}
                 </p>

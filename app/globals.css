@@ -31,23 +31,22 @@ body {
 
 .home-bg {
   background: radial-gradient(circle at top, #caa6d4, #ffffff 80%);
-  font-style: arial;
 }
 
 .about-bg{
-  background: linear-gradient(180deg, #ffffff, #d7b6d9);
+  background: linear-gradient(180deg, #ffffff, #ffffff);
 }
 
 .tutorial-bg{
-  background: linear-gradient(180deg, #ffffff, #d7b6d9);
+  background: linear-gradient(180deg, #ffffff, #ffffff);
 }
 
 .contact-bg {
-  background: linear-gradient(180deg, #d7b6d9, #ffffff);
+  background: linear-gradient(180deg, #ffffff, #ffffff);
 }
 
 .features-bg {
-  background: linear-gradient(180deg, #d7b6d9, #ffffff);
+  background: linear-gradient(180deg, #ffffff, #ffffff);
 }
 
 .title {
@@ -296,3 +295,4 @@ html {
     display: none;
   }
 }
+

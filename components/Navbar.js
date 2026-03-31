@@ -69,7 +69,7 @@ export default function Navbar() {
           {link("about")}
           {link("features")}
           {link("tutorial")}
-          {link("contact")}
+          {link("review")}
 
           <button
             onClick={() => setOpenModal(true)}
@@ -99,7 +99,7 @@ export default function Navbar() {
           {link("about")}
           {link("features")}
           {link("tutorial")}
-          {link("contact")}
+          {link("review")}
 
           <button
             onClick={() => {

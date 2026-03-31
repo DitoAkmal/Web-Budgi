@@ -3,7 +3,7 @@
 export default function ContactSection() {
   return (
     <section
-      id="contact"
+      id="review"
       className="contact-bg min-h-screen flex items-center justify-center px-4 py-20"
     >
       <div className="w-full max-w-4xl mx-auto bg-white/5 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-white/10">
@@ -11,10 +11,10 @@ export default function ContactSection() {
         {/* Title */}
         <div className="text-center mb-10 max-w-xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-semibold mb-2">
-            Contact Us
+            User Review
           </h2>
           <p className="text-white/60 text-sm">
-            Have questions or suggestion. Reach out to us.
+            Have a suggestion. Reach out to us.
           </p>
         </div>
 
