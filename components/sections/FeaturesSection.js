@@ -15,15 +15,13 @@ export default function FeaturesSection() {
   const tabs = [
     { id: 1, label: "Tracking" },
     { id: 2, label: "Analytics" },
-    { id: 3, label: "Budgeting" },
-    { id: 4, label: "Goals" },
+    { id: 3, label: "Split-bill" },
   ];
 
   const images = {
     1: ["/images/f1.png", "/images/f2.png", "/images/f3.png"],
     2: ["/images/f4.png", "/images/f5.png", "/images/f6.png"],
     3: ["/images/f7.png", "/images/f8.png", "/images/f9.png"],
-    4: ["/images/f10.png", "/images/f11.png", "/images/f12.png"],
   };
 
   const base = images[active];
@@ -153,7 +151,7 @@ export default function FeaturesSection() {
   };
 
   return (
-    <section className="features-bg min-h-screen flex items-center justify-center px-4 py-16">
+    <section id="features" className="features-bg min-h-screen flex items-center justify-center px-4 py-16">
       <div className="w-full max-w-6xl bg-[#b79bbd] rounded-3xl p-8 md:p-12">
 
         <h2 className="text-center text-2xl md:text-3xl font-semibold mb-8">

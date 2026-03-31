@@ -12,17 +12,32 @@ export default function AboutSection() {
           
           <div className="grid grid-cols-2 gap-6">
 
-            <div className="img-frame aspect-[4/4]">
-              <img src="/images/calender.png" />
+            <div className="bg-[#D7B8D9]/80 border border-white/20 rounded-2xl p-4 backdrop-blur-md aspect-[4/4]">
+              <img src="/images/calender.png" 
+              className="w-full h-auto rounded-xl"/>
             </div>
 
-            <div className="img-frame aspect-[4/4]">
-              <img src="/images/chart.png" />
+            <div className="bg-[#D7B8D9]/80 border border-white/20 rounded-2xl p-4 backdrop-blur-md aspect-[4/4]">
+              <img src="/images/chart.png" 
+              className="w-full h-auto rounded-xl"/>
             </div>
 
-            <div className="img-frame col-span-2 aspect-[5/3]">
-              <img src="/images/chart.png" />
-            </div>
+            <div className="col-span-2 bg-[#b79bbd]/10 backdrop-blur-lg border border-white/20 rounded-2xl p-6 flex flex-col justify-center">
+
+                <h3 className="text-lg font-semibold mb-3">
+                  What is Budgi
+                </h3>
+
+                <p className="text-sm leading-relaxed">
+                  Budgi helps you manage your finances in a simple and structured way.
+                  You can track every transaction, organize your spending, and monitor your budget in real time.
+                </p>
+
+                <p className="text-sm leading-relaxed mt-3">
+                  With a clean interface and practical features, Budgi makes it easier for you to stay in control of your money and reach your financial goals without complexity.
+                </p>
+
+              </div>
 
           </div>
 

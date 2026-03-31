@@ -1,4 +1,5 @@
 'use client';
+import Link from "next/link";
 
 export default function HomeSection() {
   return (
@@ -17,7 +18,7 @@ export default function HomeSection() {
           your money
         </h1>
 
-        <p className="text-black/50 max-w-xl mx-auto">
+        <p className="text-black/50 md:text-3xl lg:text-2xl max-w-xl mx-auto">
           All your finances in one place.
           <br/>
 Record, organize, and control your money in a simple and practical way.
@@ -25,15 +26,21 @@ Record, organize, and control your money in a simple and practical way.
 
         <div className="flex items-center justify-center gap-6 pt-4">
 
-          <button
-            className="px-8 py-3 rounded-full bg-black text-white font-semibold hover:scale-105 transition shadow-lg "
-          >
-            Get Started
-          </button>
+          <a
+             href="https://play.google.com/store/games?hl=id"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-3 rounded-full bg-black text-white font-semibold hover:scale-105 transition shadow-lg"
+            >
+            Download
+            </a>
 
-          <a className="text-black/50 hover:text-black transition">
-            Learn More
-          </a>
+          <Link
+          href="/#about"
+          className="text-black/50 hover:text-black transition"
+           >
+           Learn More
+            </Link>
         </div>
       </div>
     </section>

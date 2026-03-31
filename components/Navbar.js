@@ -39,7 +39,7 @@ export default function Navbar() {
       href={`#${id}`}
       onClick={() => setMobileOpen(false)}
       className={`relative text-sm transition
-      ${active === id ? "text-white" : "text-white/70 hover:text-white"}`}
+      ${active === id ? "text-[#BC9CC6]" : "text-[#BC9CC6]/70 hover:text-white"}`}
     >
       {id.charAt(0).toUpperCase() + id.slice(1)}
 
@@ -55,7 +55,7 @@ export default function Navbar() {
       <nav
         className={`fixed top-0 left-0 w-full z-50 px-6 md:px-10 py-4 flex justify-between items-center transition
         ${scrolled
-            ? "bg-black/40 backdrop-blur-xl border-b border-white/10"
+            ? "bg-black/50 backdrop-blur-xl border-b border-white/10"
             : "bg-transparent"}`}
       >
         <a href="#home" className="flex items-center gap-3">
@@ -91,7 +91,7 @@ export default function Navbar() {
       {/* mobile dropdown */}
       <div
         className={`fixed top-20 left-0 right-0 z-40 transition-all duration-300
-        ${mobileOpen ? "opacity-50 visible" : "opacity-0 invisible"}`}
+        ${mobileOpen ? "opacity-70 visible" : "opacity-0 invisible"}`}
       >
         <div className="bg-black/95 backdrop-blur-xl px-6 py-6 flex flex-col gap-4 text-center border-t border-white/10">
           

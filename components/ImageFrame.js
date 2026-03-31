@@ -9,7 +9,7 @@ export default function ImageFrame({
   return (
     <div
       className={`
-        relative w-full overflow-hidden rounded-3xl bg-gray-300/40 shadow-xl
+        relative w-full overflow-hidden rounded-3xl bg-[#b79bbd]/20 shadow-xl
         ${className}`
       }
     >
