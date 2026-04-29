@@ -1,3 +1,4 @@
+
 export default function AboutSection() {
   return (
     <section id="about" className="section-bg about-bg py-32">

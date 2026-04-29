@@ -19,9 +19,9 @@ export default function FeaturesSection() {
   ];
 
   const images = {
-    1: ["/images/f1.png", "/images/f2.png", "/images/f3.png"],
-    2: ["/images/f4.png", "/images/f5.png", "/images/f6.png"],
-    3: ["/images/f7.png", "/images/f8.png", "/images/f9.png"],
+    1: ["/images/F1.png", "/images/F2.png", "/images/F3.png"],
+    2: ["/images/F4.png", "/images/F5.png", "/images/F6.png"],
+    3: ["/images/F7.png", "/images/F8.png", "/images/F9.png"],
   };
 
   const base = images[active];

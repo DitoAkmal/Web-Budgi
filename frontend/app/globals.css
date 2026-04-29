@@ -4,7 +4,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  background: radial-gradient(circle at top, #caa6d4, #ffffff 60%);
+  background: radial-gradient(circle at top, #caa6d4, #ffffff #D69FCE #D49CC6 60%);
 }
 
 .section-bg{
@@ -30,7 +30,8 @@ body {
 }
 
 .home-bg {
-  background: radial-gradient(circle at top, #caa6d4, #ffffff 80%);
+  background: radial-gradient(circle at top,#BD9AC4,#D69FCE,#caa6d4,#FAFAFA  70%);
+  background-blend-mode: lighten;
 }
 
 .about-bg{
