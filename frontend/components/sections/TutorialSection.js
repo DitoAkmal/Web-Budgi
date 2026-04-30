@@ -1,75 +1,65 @@
-'use client';
-
-import useReveal from "../Reveal";
-
-export default function TutorialSection() {
-  useReveal();
-
-  const steps = [
-    {
-      id: 1,
-      title: "Input and Set Budget",
-      img: "/images/step-1.png",
-    },
-    {
-      id: 2,
-      title: "Track and Categories Budget",
-      img: "/images/step-2.png",
-    },
-    {
-      id: 3,
-      title: "Manage Budget and Goals",
-      img: "/images/step-3.png",
-    },
-  ];
-
+export default function TutorialPage() {
   return (
-    <section
-      id="tutorial"
-      className="tutorial-bg min-h-screen flex flex-col justify-center px-6 py-20"
-    >
-      {/* Title */}
-      <div className="max-w-6xl w-full mx-auto mb-16">
-        <h2 className=" text-center text-3xl md:text-4xl font-semibold">
-          How It Works Step-by
-          <br />
-          Step Guide
-        </h2>
-      </div>
 
-      {/* Timeline */}
-      <div className="relative max-w-6xl w-full mx-auto">
-
-        {/* Garis */}
-        <div className="hidden md:block absolute border-t border-dashed border-black/40 top-[120px] left-[8%] w-[84%]" />
-        {/* Steps */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-12 md:gap-0">
-
-          {steps.map((step) => (
-            <div
-              key={step.id}
-              className="flex flex-col items-center text-center relative z-10"
+<section style={{
+        background: "linear-gradient(135deg, #0a0e2a 0%, #1a2060 100%)",
+        padding: "100px 64px",
+        textAlign: "center",
+        position: "relative",
+        overflow: "hidden",
+      }}>
+        <div style={{
+          position: "absolute", top: "50%", left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: 600, height: 600, borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }} />
+        <div style={{ position: "relative", zIndex: 1, maxWidth: 600, margin: "0 auto" }}>
+          <p style={{ fontSize: 13, letterSpacing: "0.15em", color: "rgba(255,255,255,0.5)", textTransform: "uppercase", marginBottom: 20 }}>
+            Get Started Today
+          </p>
+          <h2 style={{
+            fontFamily: "'Syne', sans-serif", fontSize: 40, fontWeight: 800,
+            color: "#fff", letterSpacing: "-0.02em", marginBottom: 16, lineHeight: 1.15,
+          }}>
+            Download Budgi Now
+          </h2>
+          <p style={{ fontSize: 16, color: "rgba(255,255,255,0.55)", marginBottom: 40 }}>
+            Start managing your finances today
+          </p>
+          <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
+            <a
+              href="https://play.google.com/store/games?hl=id"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 10,
+                background: "#fff", color: "#0a0e2a",
+                fontFamily: "'Syne', sans-serif", fontWeight: 700,
+                fontSize: 13, padding: "14px 28px", borderRadius: 12,
+                textDecoration: "none",
+              }}
             >
-              {/* Circle Image */}
-              <div className="w-64 h-64 md:w-64 md:h-64 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-lg border border-white/30 shadow-lg">
-                <img
-                  src={step.img}
-                  alt="step"
-                  className="w-54 md:w-54"
-                />
-              </div>
-
-              {/* Text Box */}
-              <div className="mt-4 px-4 py-2 rounded-full bg-white/40 border border-white/10">
-                <p className="text-sm font-semibold md:text-base text-black">
-                  {step.title}
-                </p>
-              </div>
-            </div>
-          ))}
-
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d=""/>
+              </svg>
+              Download APK
+            </a>
+            <a
+              href="#features"
+              style={{
+                display: "inline-flex", alignItems: "center", gap: 10,
+                background: "transparent", color: "#fff",
+                fontFamily: "'Syne', sans-serif", fontWeight: 700,
+                fontSize: 13, padding: "14px 28px", borderRadius: 12,
+                textDecoration: "none", border: "1px solid rgba(255,255,255,0.2)",
+              }}
+            >
+              Learn More
+            </a>
+          </div>
         </div>
-      </div>
-    </section>
-  );
+      </section>
+        );
 }

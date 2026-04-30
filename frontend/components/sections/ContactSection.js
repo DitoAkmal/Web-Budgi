@@ -1,144 +1,209 @@
 'use client';
-
 import { useState } from "react";
 
 export default function ContactSection() {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
-
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const validate = () => {
-    if (!form.name || !form.email || !form.message) {
-      return "All fields are required";
-    }
-
-    const emailRegex = /\S+@\S+\.\S+/;
-    if (!emailRegex.test(form.email)) {
-      return "Invalid email format";
-    }
-
-    if (form.message.length < 3) {
-      return "Message too short";
-    }
-
+    if (!form.name || !form.email || !form.message) return "All fields are required";
+    if (!/\S+@\S+\.\S+/.test(form.email)) return "Invalid email format";
+    if (form.message.length < 3) return "Message too short";
     return "";
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const validationError = validate();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
-    setError("");
-    setLoading(true);
-
+    const err = validate();
+    if (err) { setError(err); return; }
+    setError(""); setLoading(true);
     try {
       await fetch("https://script.google.com/macros/s/AKfycbyvvWeekEiDk4divOlnRzLgVgAI5DXI60p1pMcyB8xfgdQcPxZHcF0GD0hme5DUFbmx/exec", {
-        method: "POST",
-        body: JSON.stringify(form),
+        method: "POST", body: JSON.stringify(form),
       });
-
       setSuccess(true);
       setForm({ name: "", email: "", message: "" });
-
       setTimeout(() => setSuccess(false), 3000);
-
-    } catch {
-      setError("Failed to send message");
-    } finally {
-      setLoading(false);
-    }
+    } catch { setError("Failed to send message"); }
+    setLoading(false);
   };
 
   return (
-    <section
-      id="review"
-      className="contact-bg min-h-screen flex items-center justify-center px-4 py-20"
-    >
-      <div className="w-full max-w-4xl mx-auto bg-white/5 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-white/10">
-
-        <div className="text-center mb-10 max-w-xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-semibold mb-2">
-            User Review
-          </h2>
-          <p className="text-white/60 text-sm">
-            Have a suggestion. Reach out to us.
+    <>
+      {/* Review / Contact Section */}
+      <section id="review" style={{ background: "#f4f6fb", padding: "80px 64px" }}>
+        <div style={{ maxWidth: 600, margin: "0 auto" }}>
+          <h2 style={{
+            fontFamily: "'Syne', sans-serif", fontSize: 28, fontWeight: 800,
+            textAlign: "center", color: "#0a0e2a", marginBottom: 8,
+          }}>User Review</h2>
+          <p style={{ textAlign: "center", color: "#94a3b8", fontSize: 14, marginBottom: 40 }}>
+            Have a suggestion? Reach out to us.
           </p>
+
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {[
+              { name: "name", placeholder: "Your Name", type: "text" },
+              { name: "email", placeholder: "Your Email", type: "email" },
+            ].map(f => (
+              <input
+                key={f.name}
+                type={f.type}
+                name={f.name}
+                value={form[f.name]}
+                onChange={handleChange}
+                placeholder={f.placeholder}
+                style={{
+                  background: "#fff", border: "1.5px solid #e5e7eb",
+                  borderRadius: 12, padding: "14px 18px", fontSize: 14,
+                  outline: "none", color: "#0a0e2a",
+                  fontFamily: "inherit",
+                  transition: "border-color 0.2s",
+                }}
+                onFocus={e => e.target.style.borderColor = "#3b82f6"}
+                onBlur={e => e.target.style.borderColor = "#e5e7eb"}
+              />
+            ))}
+            <textarea
+              name="message"
+              value={form.message}
+              onChange={handleChange}
+              rows={4}
+              placeholder="Your Message"
+              style={{
+                background: "#fff", border: "1.5px solid #e5e7eb",
+                borderRadius: 12, padding: "14px 18px", fontSize: 14,
+                outline: "none", color: "#0a0e2a", resize: "none",
+                fontFamily: "inherit",
+                transition: "border-color 0.2s",
+              }}
+              onFocus={e => e.target.style.borderColor = "#3b82f6"}
+              onBlur={e => e.target.style.borderColor = "#e5e7eb"}
+            />
+            {error && <p style={{ color: "#ef4444", fontSize: 13, textAlign: "center" }}>{error}</p>}
+            <button
+              type="submit"
+              disabled={loading}
+              style={{
+                background: loading ? "#94a3b8" : "#0a0e2a",
+                color: "#fff", border: "none",
+                borderRadius: 12, padding: "14px",
+                fontSize: 14, fontWeight: 700, cursor: "pointer",
+                fontFamily: "'Syne', sans-serif",
+                transition: "background 0.2s",
+              }}
+            >
+              {loading ? "Sending..." : "Send Message"}
+            </button>
+          </form>
         </div>
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col gap-4 max-w-md mx-auto w-full"
-        >
+        {success && (
+          <div style={{
+            position: "fixed", top: 24, left: "50%", transform: "translateX(-50%)",
+            background: "#0a0e2a", color: "#fff",
+            padding: "12px 28px", borderRadius: 100, fontSize: 14, fontWeight: 600,
+            zIndex: 999, boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+          }}>
+            Message sent successfully
+          </div>
+        )}
+      </section>
 
-          <input
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            type="text"
-            placeholder="Your Name"
-            className="bg-white/30 border border-black/30 rounded-lg px-4 py-3 text-sm outline-none"
-          />
+      {/* Footer */}
+      <footer style={{
+        background: "#004191",
+        padding: "60px 64px 40px",
+        color: "rgba(255,255,255,0.6)",
+      }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 40, marginBottom: 48 }}>
+            {/* Brand */}
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                <div style={{
+                  width: 36, height: 36, borderRadius: 10,
+                  background: "#3b82f6", display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  <span style={{ color: "#fff", fontFamily: "'Syne', sans-serif", fontWeight: 900, fontSize: 16 }}>B</span>
+                </div>
+                <span style={{ color: "#fff", fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 18 }}>udgi</span>
+              </div>
+              <p style={{ fontSize: 13, lineHeight: 1.6, maxWidth: 220, color: "rgba(255,255,255,0.45)" }}>
+                Smart finance tracking for everyone.
+              </p>
+                <a
+                  href="https://play.google.com/store/apps"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center', gap: 12,
+                    background: '#000', color: '#fff',
+                    padding: '10px 18px',  borderRadius: 12,
+                    textDecoration: 'none',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                  }}
+                >
+                  <img
+                    src="/images/android.png"
+                    alt="Android"
+                    style={{
+                    width: 26, height: 26, objectFit: 'contain',
+                    }}
+                  />
+                  <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+                    <span
+                      style={{
+                        fontSize: 10, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.7)',
+                      }}
+                    >
+                      GET IT ON
+                    </span>
 
-          <input
-            name="email"
-            value={form.email}
-            onChange={handleChange}
-            type="email"
-            placeholder="Your Email"
-            className="bg-white/30 border border-black/30 rounded-lg px-4 py-3 text-sm outline-none"
-          />
+                    <span
+                      style={{
+                        fontSize: 16, fontWeight: 600,
+                      }}
+                    >
+                      Google Play
+                    </span>
+                  </div>
+                </a>
+              </div>
+            {/* Links */}
+            <div style={{ display: "flex", gap: 64, flexWrap: "wrap" }}>
+              <div>
+                <p style={{ color: "#fff", fontWeight: 700, fontSize: 13, marginBottom: 16 }}>Product</p>
+                {["Features", "Download", "Pricing"].map(l => (
+                  <a key={l} href="#" style={{ display: "block", color: "rgba(255,255,255,0.45)", fontSize: 13, marginBottom: 10, textDecoration: "none" }}>{l}</a>
+                ))}
+              </div>
+              <div>
+                <p style={{ color: "#fff", fontWeight: 700, fontSize: 13, marginBottom: 16 }}>Company</p>
+                {["About", "Contact Us", "FAQ"].map(l => (
+                  <a key={l} href="#" style={{ display: "block", color: "rgba(255,255,255,0.45)", fontSize: 13, marginBottom: 10, textDecoration: "none" }}>{l}</a>
+                ))}
+              </div>
+              <div>
+                <p style={{ color: "#fff", fontWeight: 700, fontSize: 13, marginBottom: 16 }}>Legal</p>
+                {["Privacy Policy", "Terms of Service"].map(l => (
+                  <a key={l} href="#" style={{ display: "block", color: "rgba(255,255,255,0.45)", fontSize: 13, marginBottom: 10, textDecoration: "none" }}>{l}</a>
+                ))}
+              </div>
+            </div>
+          </div>
 
-          <textarea
-            name="message"
-            value={form.message}
-            onChange={handleChange}
-            rows="4"
-            placeholder="Your Message"
-            className="bg-white/30 border border-black/30 rounded-lg px-4 py-3 text-sm outline-none resize-none"
-          />
-
-          {error && (
-            <p className="text-red-400 text-sm text-center">{error}</p>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className={`mt-2 py-3 rounded-lg font-semibold transition
-            ${loading
-              ? "bg-gray-400 text-white cursor-not-allowed"
-              : "bg-[#BC9CC6] text-white hover:opacity-90"
-            }`}
-          >
-            {loading ? "Sending..." : "Send Message"}
-          </button>
-
-        </form>
-      </div>
-
-      {/* SUCCESS POPUP */}
-      {success && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 bg-[#BC9CC6] text-black px-6 py-3 rounded-full shadow-lg">
-          Message sent successfully
+          <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 24, textAlign: "center" }}>
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.3)" }}>
+              Copyright 2026 - Budgi. All rights reserved.
+            </p>
+          </div>
         </div>
-      )}
-    </section>
+      </footer>
+    </>
   );
 }
