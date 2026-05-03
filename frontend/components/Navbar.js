@@ -26,7 +26,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navLinks = ["home", "about", "features", "tutorial"];
+  const navLinks = ["home", "about", "features"];
 
   return (
     <>
@@ -40,19 +40,30 @@ export default function Navbar() {
         borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "none",
       }}>
         {/* Logo */}
-        <a href="#home" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
-          <div style={{
-            width: 30, height: 30, borderRadius: 8, background: "#3b82f6",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <span style={{ color: "#fff", fontFamily: "'Syne', sans-serif", fontWeight: 900, fontSize: 14 }}>B</span>
+        <a href="#home" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+          <div style={{ position: "relative", width: 30, height: 30 }}>
+            <Image
+              src="/logo.png"
+              alt="Budgi Logo"
+              fill
+              style={{ objectFit: "contain" }}
+              sizes="30px"
+              priority
+            />
           </div>
           <span style={{
-            fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 18, color: "#fff",
+            fontFamily: "'Syne', sans-serif",
+            fontWeight: 900,
+            fontSize: 18,
+            letterSpacing: "-0.04em",
+            background: "linear-gradient(90deg, #93c5fd 30%, #0400ff 70%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
           }}>udgi</span>
         </a>
 
-        {/* Desktop links */}
+        {/* Desktop: nav links + CTA all on the right */}
         <div className="hidden md:flex" style={{ alignItems: "center", gap: 36 }}>
           {navLinks.map(id => (
             <a key={id} href={`#${id}`} style={{
@@ -63,17 +74,15 @@ export default function Navbar() {
               {id.charAt(0).toUpperCase() + id.slice(1)}
             </a>
           ))}
-        </div>
 
-        {/* Desktop CTA */}
-        <div className="hidden md:flex" style={{ alignItems: "center", gap: 12 }}>
           <a
             href="https://play.google.com/store/games?hl=id"
             target="_blank" rel="noopener noreferrer"
-            style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", textDecoration: "none", padding: "8px 16px" }}
+            style={{ fontSize: 13, color: "rgba(255,255,255,0.55)", textDecoration: "none", padding: "8px 4px" }}
           >
             Download App
           </a>
+
           <button
             onClick={() => setOpenModal(true)}
             style={{

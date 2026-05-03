@@ -1,5 +1,6 @@
 'use client';
 import { useState } from "react";
+import Image from "next/image";
 
 export default function ContactSection() {
   const [form, setForm] = useState({ name: "", email: "", message: "" });
@@ -117,22 +118,28 @@ export default function ContactSection() {
       <footer style={{
         background: "#004191",
         padding: "60px 64px 40px",
-        color: "rgba(255,255,255,0.6)",
+        color: "#fff",
       }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: 40, marginBottom: 48 }}>
             {/* Brand */}
             <div>
-              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-                <div style={{
-                  width: 36, height: 36, borderRadius: 10,
-                  background: "#3b82f6", display: "flex", alignItems: "center", justifyContent: "center",
-                }}>
-                  <span style={{ color: "#fff", fontFamily: "'Syne', sans-serif", fontWeight: 900, fontSize: 16 }}>B</span>
+              <a href="#home" style={{ display: "flex", alignItems: "center", gap: 0, textDecoration: "none" }}>
+                <div style={{ position: "relative", width: 30, height: 30 }}>
+                  <Image
+                    src="/logo.png"
+                    alt="Budgi Logo"
+                    fill
+                    style={{ objectFit: "contain" }}
+                    sizes="30px"
+                    priority
+                  />
                 </div>
-                <span style={{ color: "#fff", fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 18 }}>udgi</span>
-              </div>
-              <p style={{ fontSize: 13, lineHeight: 1.6, maxWidth: 220, color: "rgba(255,255,255,0.45)" }}>
+                <span style={{
+                  fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: 18, color: "#fff",
+                }}>udgi</span>
+              </a>
+              <p style={{ fontSize: 13, lineHeight: 1.6, maxWidth: 220, color: "#fff" }}>
                 Smart finance tracking for everyone.
               </p>
                 <a
@@ -158,7 +165,7 @@ export default function ContactSection() {
                   <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
                     <span
                       style={{
-                        fontSize: 10, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.7)',
+                        fontSize: 10, letterSpacing: '0.08em', color: '#fff',
                       }}
                     >
                       GET IT ON
@@ -179,26 +186,26 @@ export default function ContactSection() {
               <div>
                 <p style={{ color: "#fff", fontWeight: 700, fontSize: 13, marginBottom: 16 }}>Product</p>
                 {["Features", "Download", "Pricing"].map(l => (
-                  <a key={l} href="#" style={{ display: "block", color: "rgba(255,255,255,0.45)", fontSize: 13, marginBottom: 10, textDecoration: "none" }}>{l}</a>
+                  <a key={l} href="#" style={{ display: "block", color: "#fff", fontSize: 13, marginBottom: 10, textDecoration: "none" }}>{l}</a>
                 ))}
               </div>
               <div>
                 <p style={{ color: "#fff", fontWeight: 700, fontSize: 13, marginBottom: 16 }}>Company</p>
                 {["About", "Contact Us", "FAQ"].map(l => (
-                  <a key={l} href="#" style={{ display: "block", color: "rgba(255,255,255,0.45)", fontSize: 13, marginBottom: 10, textDecoration: "none" }}>{l}</a>
+                  <a key={l} href="#" style={{ display: "block", color: "#fff", fontSize: 13, marginBottom: 10, textDecoration: "none" }}>{l}</a>
                 ))}
               </div>
               <div>
                 <p style={{ color: "#fff", fontWeight: 700, fontSize: 13, marginBottom: 16 }}>Legal</p>
                 {["Privacy Policy", "Terms of Service"].map(l => (
-                  <a key={l} href="#" style={{ display: "block", color: "rgba(255,255,255,0.45)", fontSize: 13, marginBottom: 10, textDecoration: "none" }}>{l}</a>
+                  <a key={l} href="#" style={{ display: "block", color: "#fff", fontSize: 13, marginBottom: 10, textDecoration: "none" }}>{l}</a>
                 ))}
               </div>
             </div>
           </div>
 
-          <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 24, textAlign: "center" }}>
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.3)" }}>
+          <div style={{ borderTop: "1px solid #fff", paddingTop: 24, textAlign: "center" }}>
+            <p style={{ fontSize: 13, color: "#fff" }}>
               Copyright 2026 - Budgi. All rights reserved.
             </p>
           </div>

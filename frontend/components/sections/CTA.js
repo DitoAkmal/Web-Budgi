@@ -1,6 +1,7 @@
 export default function TutorialPage() {
   return (
 
+<section id="CTA"> 
 <section style={{
         background: "linear-gradient(135deg, #0a0e2a 0%, #1a2060 100%)",
         padding: "100px 64px",
@@ -29,23 +30,44 @@ export default function TutorialPage() {
             Start managing your finances today
           </p>
           <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
-            <a
-              href="https://play.google.com/store/games?hl=id"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: "inline-flex", alignItems: "center", gap: 10,
-                background: "#fff", color: "#0a0e2a",
-                fontFamily: "'Syne', sans-serif", fontWeight: 700,
-                fontSize: 13, padding: "14px 28px", borderRadius: 12,
-                textDecoration: "none",
-              }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d=""/>
-              </svg>
-              Download APK
-            </a>
+                <a
+                  href="https://play.google.com/store/apps"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center', gap: 12,
+                    background: '#000', color: '#fff',
+                    padding: '10px 18px',  borderRadius: 12,
+                    textDecoration: 'none',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                  }}
+                >
+                  <img
+                    src="/images/android.png"
+                    alt="Android"
+                    style={{
+                    width: 26, height: 26, objectFit: 'contain',
+                    }}
+                  />
+                  <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1 }}>
+                    <span
+                      style={{
+                        fontSize: 10, letterSpacing: '0.08em', color: '#fff',
+                      }}
+                    >
+                      GET IT ON
+                    </span>
+
+                    <span
+                      style={{
+                        fontSize: 16, fontWeight: 600,
+                      }}
+                    >
+                      Google Play
+                    </span>
+                  </div>
+                </a>
             <a
               href="#features"
               style={{
@@ -61,5 +83,6 @@ export default function TutorialPage() {
           </div>
         </div>
       </section>
+    </section>
         );
 }

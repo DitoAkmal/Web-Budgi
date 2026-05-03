@@ -3,7 +3,7 @@ import Navbar from "@/components/Navbar";
 import HomeSection from "@/components/sections/HomeSection";
 import AboutSection from "@/components/sections/AboutSection";
 import FeaturesSection from "@/components/sections/FeaturesSection";
-import TutorialSection from "@/components/sections/TutorialSection";
+import CTA from "@/components/sections/CTA";
 import ContactSection from "@/components/sections/ContactSection";
 
 export default function Page() {
@@ -13,7 +13,7 @@ export default function Page() {
       <HomeSection/>
       <AboutSection/>
       <FeaturesSection/>
-      <TutorialSection/>
+      <CTA/>
       <ContactSection/>
     </main>
   );
