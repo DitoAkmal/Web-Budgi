@@ -16,6 +16,17 @@ function useInView(threshold = 0.08) {
   return [ref, inView];
 }
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 function DonutChart({ active }) {
   const segments = [
     { color: "#ef4444", pct: 40, label: "food 40%" },
@@ -109,7 +120,6 @@ function DonutChart({ active }) {
   );
 }
 
-// Bar chart — SVG-based so all coordinates are pixel-precise, no layout drift
 function BarChart({ active }) {
   const bars = [
     { label: "1-6",   value: 75000  },
@@ -128,14 +138,11 @@ function BarChart({ active }) {
   ];
 
   const chartMax = 300000;
-
-  // SVG fixed dimensions — reduce side padding to fill card width
   const W = 260, H = 220;
   const padL = 30, padR = 4, padT = 16, padB = 22;
   const chartW = W - padL - padR;
   const chartH = H - padT - padB;
 
-  // Animated bar heights (in SVG units)
   const [animH, setAnimH] = useState(bars.map(() => 0));
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -171,12 +178,10 @@ function BarChart({ active }) {
     return () => { timers.forEach(clearTimeout); clearTimeout(tt); };
   }, [active]);
 
-  // Bar x positions: divide chartW into equal slots with a fixed gap between bars
   const gap = 6;
   const slotW = chartW / bars.length;
   const barW = slotW * 1 - gap;
 
-  // Tooltip for first bar
   const tipBar = bars[0];
   const tipX = padL + slotW * 0.5;
   const tipY = valToY(tipBar.value) - 12;
@@ -198,7 +203,6 @@ function BarChart({ active }) {
         style={{ width: "100%", height: "100%", display: "block" }}
         preserveAspectRatio="xMidYMid meet"
       >
-        {/* Gradient def for bars */}
         <defs>
           <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#4ade80" />
@@ -206,103 +210,41 @@ function BarChart({ active }) {
           </linearGradient>
         </defs>
 
-        {/* Y-axis labels + dotted grid lines */}
         {yLabels.map(({ label, value }) => {
           const y = valToY(value);
           return (
             <g key={label} opacity={active ? 1 : 0} style={{ transition: active ? "opacity 0.4s ease 0.15s" : "none" }}>
-              {/* Label */}
-              <text
-                x={padL - 4}
-                y={y + 3}
-                textAnchor="end"
-                fontSize="7.5"
-                fill="#94a3b8"
-                fontFamily="sans-serif"
-              >
-                {label}
-              </text>
-              {/* Dotted line */}
-              <line
-                x1={padL}
-                y1={y}
-                x2={W - padR}
-                y2={y}
-                stroke="#d1d5db"
-                strokeWidth="0.8"
-                strokeDasharray="3 6"
-              />
+              <text x={padL - 4} y={y + 3} textAnchor="end" fontSize="7.5" fill="#94a3b8" fontFamily="sans-serif">{label}</text>
+              <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#d1d5db" strokeWidth="0.8" strokeDasharray="3 6" />
             </g>
           );
         })}
 
-        {/* Bars + X labels */}
         {bars.map((bar, i) => {
-          const cx = padL + slotW * i + slotW / 2;
-          const bx = cx - barW / 2;
+          const cx2 = padL + slotW * i + slotW / 2;
+          const bx = cx2 - barW / 2;
           const bh = animH[i];
           const by = padT + chartH - bh;
 
           return (
             <g key={bar.label}>
-              {/* Bar */}
-              <rect
-                x={bx}
-                y={by}
-                width={barW}
-                height={bh}
-                rx={2}
-                ry={2}
-                fill="url(#barGrad)"
-              />
-              {/* X label */}
-              <text
-                x={cx}
-                y={H - 6}
-                textAnchor="middle"
-                fontSize="7"
-                fill="#94a3b8"
-                fontFamily="sans-serif"
+              <rect x={bx} y={by} width={barW} height={bh} rx={2} ry={2} fill="url(#barGrad)" />
+              <text x={cx2} y={H - 6} textAnchor="middle" fontSize="7" fill="#94a3b8" fontFamily="sans-serif"
                 opacity={active ? 1 : 0}
-                style={{ transition: active ? `opacity 0.3s ease ${i * 0.1}s` : "none" }}
-              >
+                style={{ transition: active ? `opacity 0.3s ease ${i * 0.1}s` : "none" }}>
                 {bar.label}
               </text>
             </g>
           );
         })}
 
-        {/* Tooltip on first bar */}
         {showTooltip && (
           <g opacity={showTooltip ? 1 : 0} style={{ transition: "opacity 0.3s ease" }}>
-            {/* Box */}
-            <rect
-              x={tipX - 4}
-              y={tipY - tipH}
-              width={tipW}
-              height={tipH}
-              rx={tipR}
-              ry={tipR}
-              fill="#ffffff"
-              stroke="#e5e7eb"
-              strokeWidth="0.8"
-              filter="drop-shadow(0 1px 4px rgba(0,0,0,0.12))"
-            />
-            {/* Caret */}
-            <polygon
-              points={`${tipX + 6},${tipY} ${tipX + 2},${tipY - 5} ${tipX + 10},${tipY - 5}`}
-              fill="#ffffff"
-            />
-            {/* Text */}
-            <text
-              x={tipX + tipW / 2 - 4}
-              y={tipY - tipH / 2 + 3}
-              textAnchor="middle"
-              fontSize="8"
-              fontWeight="700"
-              fill="#111827"
-              fontFamily="sans-serif"
-            >
+            <rect x={tipX - 4} y={tipY - tipH} width={tipW} height={tipH} rx={tipR} ry={tipR}
+              fill="#ffffff" stroke="#e5e7eb" strokeWidth="0.8"
+              filter="drop-shadow(0 1px 4px rgba(0,0,0,0.12))" />
+            <polygon points={`${tipX + 6},${tipY} ${tipX + 2},${tipY - 5} ${tipX + 10},${tipY - 5}`} fill="#ffffff" />
+            <text x={tipX + tipW / 2 - 4} y={tipY - tipH / 2 + 3} textAnchor="middle" fontSize="8" fontWeight="700" fill="#111827" fontFamily="sans-serif">
               Rp75.000
             </text>
           </g>
@@ -312,15 +254,19 @@ function BarChart({ active }) {
   );
 }
 
-function TrackMoneyCard() {
+function TrackMoneyCard({ isMobile }) {
   const [on, setOn] = useState(false);
+
+  const handlers = isMobile
+    ? { onClick: () => setOn(v => !v) }
+    : { onMouseEnter: () => setOn(true), onMouseLeave: () => setOn(false) };
+
   return (
     <div
-      onMouseEnter={() => setOn(true)}
-      onMouseLeave={() => setOn(false)}
+      {...handlers}
       style={{
         borderRadius: 20, overflow: "hidden", position: "relative",
-        height: "100%", background: "#fff", cursor: "default",
+        height: "100%", background: "#fff", cursor: "pointer",
         boxShadow: on ? "0 20px 48px rgba(0,0,0,0.18)" : "0 2px 16px rgba(0,0,0,0.07)",
         transform: on ? "translateY(-5px)" : "translateY(0)",
         transition: "transform 0.3s ease, box-shadow 0.3s ease",
@@ -349,12 +295,6 @@ function TrackMoneyCard() {
             <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 22, fontWeight: 900, color: "#fff" }}>
               Rp 500.000
             </span>
-            <div style={{ width: 20, height: 20, borderRadius: "50%", border: "1.5px solid rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
-            </div>
           </div>
         </div>
       </div>
@@ -366,51 +306,46 @@ function TrackMoneyCard() {
       }}>
         <Image src="/images/Feature 1-2.png" alt="Track Money" fill style={{ objectFit: "cover", objectPosition: "center top" }} sizes="600px" priority />
       </div>
+      {isMobile && (
+        <div style={{
+          position: "absolute", bottom: 10, right: 10, zIndex: 10,
+          background: "rgba(0,0,0,0.4)", color: "#fff",
+          fontSize: 10, padding: "3px 8px", borderRadius: 6,
+        }}>
+          {on ? "Tutup" : "Tap untuk lihat"}
+        </div>
+      )}
     </div>
   );
 }
 
-function SpendingCard() {
+function SpendingCard({ isMobile }) {
   const [on, setOn] = useState(false);
-  // savedTab persists the last active tab across hover sessions
   const [savedTab, setSavedTab] = useState("donut");
   const [tab, setTab] = useState("donut");
 
-  const handleMouseEnter = () => {
-    setTab(savedTab);
-    setOn(true);
-  };
+  const handleOpen = () => { setTab(savedTab); setOn(true); };
+  const handleClose = () => { setSavedTab(tab); setOn(false); };
+  const handleTabChange = (newTab) => { setTab(newTab); setSavedTab(newTab); };
 
-  const handleMouseLeave = () => {
-    setSavedTab(tab);
-    setOn(false);
-  };
-
-  const handleTabChange = (newTab) => {
-    setTab(newTab);
-    setSavedTab(newTab);
-  };
+  const handlers = isMobile
+    ? { onClick: () => on ? handleClose() : handleOpen() }
+    : { onMouseEnter: handleOpen, onMouseLeave: handleClose };
 
   return (
     <div
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      {...handlers}
       style={{
-        borderRadius: 20,
-        overflow: "hidden",
-        position: "relative",
-        height: "100%",
-        background: "#fff",
+        borderRadius: 20, overflow: "hidden", position: "relative",
+        height: "100%", background: "#fff",
         boxShadow: on ? "0 20px 48px rgba(0,0,0,0.18)" : "0 2px 16px rgba(0,0,0,0.07)",
         transform: on ? "translateY(-5px)" : "translateY(0)",
         transition: "transform 0.3s ease, box-shadow 0.3s ease",
-        cursor: "default",
+        cursor: "pointer",
       }}
     >
-      {/* Default state: reflects savedTab with a small preview and badge */}
       <div style={{
-        position: "absolute", inset: 0,
-        padding: "24px 22px",
+        position: "absolute", inset: 0, padding: "24px 22px",
         display: "flex", flexDirection: "column",
         opacity: on ? 0 : 1,
         transform: on ? "scale(0.97)" : "scale(1)",
@@ -428,7 +363,6 @@ function SpendingCard() {
           {savedTab === "donut" ? (
             <Image src="/images/Feature 2-1.png" alt="Spending preview" fill style={{ objectFit: "contain", objectPosition: "center" }} sizes="300px" />
           ) : (
-            // Mini static bar preview for income tab saved state
             <div style={{
               width: "100%", height: "100%",
               background: "#ffffff", borderRadius: 12,
@@ -445,7 +379,6 @@ function SpendingCard() {
               ))}
             </div>
           )}
-          {/* Badge showing which tab is saved */}
           <div style={{
             position: "absolute", top: 8, right: 8,
             background: savedTab === "donut" ? "#ef4444" : "#22c55e",
@@ -457,7 +390,6 @@ function SpendingCard() {
         </div>
       </div>
 
-      {/* Hover state: interactive tabs */}
       <div style={{
         position: "absolute", inset: 0,
         background: "#fff",
@@ -467,8 +399,8 @@ function SpendingCard() {
         display: "flex", flexDirection: "column",
         pointerEvents: on ? "auto" : "none",
       }}>
-        {/* Tab bar */}
-        <div style={{ display: "flex", borderBottom: "1px solid #e5e7eb", flexShrink: 0 }}>
+        <div style={{ display: "flex", borderBottom: "1px solid #e5e7eb", flexShrink: 0 }}
+          onClick={(e) => e.stopPropagation()}>
           {["Expense", "Income"].map(t => {
             const isActive = (t === "Expense" && tab === "donut") || (t === "Income" && tab === "bar");
             return (
@@ -491,7 +423,6 @@ function SpendingCard() {
           })}
         </div>
 
-        {/* Expense: donut chart */}
         <div style={{
           position: "absolute", top: 44, left: 0, right: 0, bottom: 0,
           display: "flex", alignItems: "center", justifyContent: "center",
@@ -503,7 +434,6 @@ function SpendingCard() {
           <DonutChart active={on && tab === "donut"} />
         </div>
 
-        {/* Income: SVG bar chart */}
         <div style={{
           position: "absolute", top: 44, left: 0, right: 0, bottom: 0,
           opacity: tab === "bar" ? 1 : 0,
@@ -519,7 +449,7 @@ function SpendingCard() {
   );
 }
 
-function ScanCard() {
+function ScanCard({ isMobile }) {
   const [on, setOn] = useState(false);
   const [scanPos, setScanPos] = useState(20);
 
@@ -530,13 +460,16 @@ function ScanCard() {
     return () => clearInterval(id);
   }, []);
 
+  const handlers = isMobile
+    ? { onClick: () => setOn(v => !v) }
+    : { onMouseEnter: () => setOn(true), onMouseLeave: () => setOn(false) };
+
   return (
     <div
-      onMouseEnter={() => setOn(true)}
-      onMouseLeave={() => setOn(false)}
+      {...handlers}
       style={{
         borderRadius: 20, overflow: "hidden", position: "relative",
-        height: "100%", background: "#fff", cursor: "default",
+        height: "100%", background: "#fff", cursor: "pointer",
         boxShadow: on ? "0 20px 48px rgba(0,0,0,0.18)" : "0 2px 16px rgba(0,0,0,0.07)",
         transform: on ? "translateY(-5px)" : "translateY(0)",
         transition: "transform 0.3s ease, box-shadow 0.3s ease",
@@ -573,14 +506,7 @@ function ScanCard() {
               boxShadow: "0 0 8px rgba(59,130,246,0.7)",
               transition: "top 0.04s linear",
             }} />
-            <div style={{ position: "absolute", inset: 10, display: "flex", flexDirection: "column", gap: 4, justifyContent: "center" }}>
-              {[100, 60, 80, 45, 70].map((w, i) => (
-                <div key={i} style={{ height: 2.5, borderRadius: 2, background: `rgba(255,255,255,${0.08 + i * 0.04})`, width: `${w}%` }} />
-              ))}
-            </div>
           </div>
-          <p style={{ fontSize: 7, color: "rgba(255,255,255,0.2)", textAlign: "center", maxWidth: 76, lineHeight: 1.4 }}>Align receipt within frame</p>
-          <div style={{ position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)", width: 28, height: 3, borderRadius: 2, background: "rgba(255,255,255,0.15)" }} />
         </div>
       </div>
       <div style={{
@@ -595,15 +521,19 @@ function ScanCard() {
   );
 }
 
-function SplitCard() {
+function SplitCard({ isMobile }) {
   const [on, setOn] = useState(false);
+
+  const handlers = isMobile
+    ? { onClick: () => setOn(v => !v) }
+    : { onMouseEnter: () => setOn(true), onMouseLeave: () => setOn(false) };
+
   return (
     <div
-      onMouseEnter={() => setOn(true)}
-      onMouseLeave={() => setOn(false)}
+      {...handlers}
       style={{
         borderRadius: 20, overflow: "hidden", position: "relative",
-        height: "100%", background: "#fff", cursor: "default",
+        height: "100%", background: "#fff", cursor: "pointer",
         boxShadow: on ? "0 20px 48px rgba(0,0,0,0.18)" : "0 2px 16px rgba(0,0,0,0.07)",
         transform: on ? "translateY(-5px)" : "translateY(0)",
         transition: "transform 0.3s ease, box-shadow 0.3s ease",
@@ -665,6 +595,7 @@ function SplitCard() {
 
 export default function FeaturesSection() {
   const [sRef, inView] = useInView(0.06);
+  const isMobile = useIsMobile();
 
   return (
     <section
@@ -672,7 +603,7 @@ export default function FeaturesSection() {
       ref={sRef}
       style={{
         background: "#0a0e2a",
-        padding: "90px 64px 110px",
+        padding: isMobile ? "60px 20px 80px" : "90px 64px 110px",
         position: "relative", overflow: "hidden",
       }}
     >
@@ -687,10 +618,10 @@ export default function FeaturesSection() {
       <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative" }}>
         <h2 style={{
           fontFamily: "'Syne',sans-serif",
-          fontSize: "clamp(28px,4vw,46px)",
+          fontSize: "clamp(24px,4vw,46px)",
           fontWeight: 900, textAlign: "center",
           color: "#fff", letterSpacing: "-0.02em",
-          marginBottom: 52,
+          marginBottom: isMobile ? 32 : 52,
           opacity: inView ? 1 : 0,
           transform: inView ? "translateY(0)" : "translateY(24px)",
           transition: "opacity 0.6s ease, transform 0.6s ease",
@@ -700,20 +631,26 @@ export default function FeaturesSection() {
 
         <div style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gridTemplateRows: "320px 320px",
-          gap: 20,
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gridTemplateRows: isMobile ? "auto" : "320px 320px",
+          gap: isMobile ? 16 : 20,
         }}>
-          {[TrackMoneyCard, SpendingCard, ScanCard, SplitCard].map((C, i) => (
+          {[
+            { C: TrackMoneyCard },
+            { C: SpendingCard },
+            { C: ScanCard },
+            { C: SplitCard },
+          ].map(({ C }, i) => (
             <div
               key={i}
               style={{
+                height: isMobile ? 280 : "100%",
                 opacity: inView ? 1 : 0,
                 transform: inView ? "translateY(0)" : "translateY(36px)",
                 transition: `opacity 0.6s ease ${i * 0.08}s, transform 0.6s ease ${i * 0.08}s`,
               }}
             >
-              <C />
+              <C isMobile={isMobile} />
             </div>
           ))}
         </div>
@@ -724,7 +661,7 @@ export default function FeaturesSection() {
           letterSpacing: "0.08em", textTransform: "uppercase",
           opacity: inView ? 1 : 0, transition: "opacity 0.8s ease 0.5s",
         }}>
-          Hover to explore
+          {isMobile ? "Tap untuk explore" : "Hover to explore"}
         </p>
       </div>
     </section>

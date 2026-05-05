@@ -48,7 +48,7 @@ function LegalModal({ type, onClose }) {
     },
     {
       heading: "8. Contact Us",
-      body: "If you have any questions about this Privacy Policy, please contact us through the form on our website.",
+      body: "If you have any questions about this Privacy Policy, please contact us at privacy@budgi.app or through the contact form on our website.",
     },
   ];
 
@@ -91,7 +91,7 @@ function LegalModal({ type, onClose }) {
     },
     {
       heading: "10. Contact",
-      body: "For questions about these Terms of Service, contact us through the page above.",
+      body: "For questions about these Terms of Service, contact us at legal@budgi.app.",
     },
   ];
 
@@ -279,8 +279,11 @@ export default function ContactSection() {
       {/* Legal modals */}
       {modal && <LegalModal type={modal} onClose={() => setModal(null)} />}
 
+      {/* Wrapper: background matches contact so footer's border-radius has no dark gap behind it */}
+      <div style={{ background: "#f4f6fb" }}>
+
       {/* Contact Section */}
-      <section id="review" style={{ background: "#f4f6fb", padding: "80px 64px" }}>
+      <section id="review" style={{ padding: "80px 64px" }}>
         <div style={{ maxWidth: 600, margin: "0 auto" }}>
           <h2 style={{
             fontFamily: "'Syne', sans-serif", fontSize: 28, fontWeight: 800,
@@ -486,6 +489,7 @@ export default function ContactSection() {
           </div>
         </div>
       </footer>
+      </div> {/* end wrapper */}
     </>
   );
 }
