@@ -49,10 +49,13 @@ export default function AboutSection() {
       id="about"
       ref={sectionRef}
       style={{
-        background: "linear-gradient(160deg, #eef1f9 0%, #f4f6fb 50%, #e8edf8 100%)",
-        padding: "100px 64px 80px",
-        position: "relative",
-        overflow: "hidden",
+        background: '#f4f6fb',
+        minHeight: '100vh',
+        padding: '80px 64px',
+        borderRadius: '32px 32px 0 0',
+        marginTop: '-32px',
+        position: 'relative',
+        zIndex: 2,
       }}
     >
       {/* Decorative blob */}
