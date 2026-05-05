@@ -91,7 +91,7 @@ export default function Navbar() {
               padding: "9px 20px", borderRadius: 8, cursor: "pointer",
             }}
           >
-            Try Demo
+            Get Notified
           </button>
         </div>
 
@@ -130,7 +130,7 @@ export default function Navbar() {
               padding: "12px", borderRadius: 8, cursor: "pointer", marginTop: 8,
             }}
           >
-            Try Demo
+            Get Notified
           </button>
         </div>
       )}

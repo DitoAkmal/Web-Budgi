@@ -16,6 +16,17 @@ function useInView(threshold = 0.08) {
   return [ref, inView];
 }
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 function DonutChart({ active }) {
   const segments = [
     { color: "#ef4444", pct: 40, label: "food 40%" },
@@ -27,11 +38,10 @@ function DonutChart({ active }) {
   const cx = 110, cy = 110;
   const stroke = 28;
   const circumference = 2 * Math.PI * R;
-  const gap = 3; // degrees gap between segments
+  const gap = 3;
 
-  // Pre-compute each arc's geometry
   const arcs = (() => {
-    let angleDeg = -90; // start at top
+    let angleDeg = -90;
     return segments.map(seg => {
       const arcDeg = (seg.pct / 100) * 360;
       const drawDeg = arcDeg - gap;
@@ -42,21 +52,18 @@ function DonutChart({ active }) {
     });
   })();
 
-  // Counter animation for the center label
   const [count, setCount] = useState(0);
   useEffect(() => {
     if (!active) { setCount(0); return; }
     let v = 0;
-    const total = 92; // sum of all pct
-    const duration = 900;
+    const total = 92;
     const steps = 40;
-    const increment = total / steps;
-    const interval = duration / steps;
+    const duration = 900;
     const id = setInterval(() => {
-      v = Math.min(v + increment, total);
+      v = Math.min(v + total / steps, total);
       setCount(Math.round(v));
       if (v >= total) clearInterval(id);
-    }, interval);
+    }, duration / steps);
     return () => clearInterval(id);
   }, [active]);
 
@@ -64,58 +71,33 @@ function DonutChart({ active }) {
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", height: "100%" }}>
       <div style={{ position: "relative", flex: 1, display: "flex", alignItems: "center", justifyContent: "center" }}>
         <svg width={220} height={220} viewBox="0 0 220 220">
-          {/* Background ring */}
-          <circle
-            cx={cx} cy={cy} r={R}
-            fill="none"
-            stroke="#e5e7eb"
-            strokeWidth={stroke}
-          />
-
-          {arcs.map((arc, i) => (
-            <circle
-              key={i}
-              cx={cx} cy={cy} r={R}
-              fill="none"
-              stroke={arc.color}
-              strokeWidth={stroke}
-              strokeLinecap="butt"
-              // dasharray: full circumference so the arc covers the ring completely when offset=0
-              strokeDasharray={`${arc.drawLen} ${circumference - arc.drawLen}`}
-              // dashoffset controls rotation (which segment starts where) PLUS the grow-in animation:
-              // when inactive → offset is pushed far back (circumference) so nothing is visible
-              // when active   → offset animates to its final position
-              strokeDashoffset={
-                active
-                  ? arc.startOffset          // final resting position
-                  : arc.startOffset + circumference  // hidden (fully offset away)
-              }
-              style={{
-                transition: active
-                  ? `stroke-dashoffset 0.75s cubic-bezier(0.4,0,0.2,1) ${i * 0.18}s`
-                  : "none",
-              }}
-            />
-          ))}
-
-          {/* Center label */}
-          <text
-            x={cx} y={cy - 8}
-            textAnchor="middle"
-            fill="#0a0e2a"
-            fontSize="15"
-            fontWeight="800"
-            fontFamily="'Syne',sans-serif"
-          >
+          <circle cx={cx} cy={cy} r={R} fill="none" stroke="#e5e7eb" strokeWidth={stroke} />
+          {arcs.map((arc, i) => {
+            const drawnLen = active ? arc.drawLen : 0;
+            return (
+              <circle
+                key={i}
+                cx={cx} cy={cy} r={R}
+                fill="none"
+                stroke={arc.color}
+                strokeWidth={stroke}
+                strokeLinecap="butt"
+                strokeDasharray={`${drawnLen} ${circumference - drawnLen}`}
+                strokeDashoffset={arc.startOffset}
+                style={{
+                  transition: active
+                    ? `stroke-dasharray 0.75s cubic-bezier(0.4,0,0.2,1) ${i * 0.18}s`
+                    : "none",
+                }}
+              />
+            );
+          })}
+          <text x={cx} y={cy - 8} textAnchor="middle" fill="#0a0e2a" fontSize="15" fontWeight="800" fontFamily="'Syne',sans-serif">
             {active ? `${count}%` : "0%"}
           </text>
-          <text x={cx} y={cy + 12} textAnchor="middle" fill="#94a3b8" fontSize="11">
-            Expense
-          </text>
+          <text x={cx} y={cy + 12} textAnchor="middle" fill="#94a3b8" fontSize="11">Expense</text>
         </svg>
       </div>
-
-      {/* Legend */}
       <div style={{ display: "flex", gap: 14, paddingBottom: 12, flexWrap: "wrap", justifyContent: "center" }}>
         {segments.map((seg, i) => (
           <div
@@ -138,21 +120,158 @@ function DonutChart({ active }) {
   );
 }
 
-function TrackMoneyCard() {
+function BarChart({ active }) {
+  const bars = [
+    { label: "1-6",   value: 75000  },
+    { label: "7-12",  value: 130000 },
+    { label: "13-18", value: 155000 },
+    { label: "19-24", value: 210000 },
+    { label: "25-30", value: 260000 },
+  ];
+
+  const yLabels = [
+    { label: "300k", value: 300000 },
+    { label: "200k", value: 200000 },
+    { label: "150k", value: 150000 },
+    { label: "100k", value: 100000 },
+    { label: "50k",  value: 50000  },
+  ];
+
+  const chartMax = 300000;
+  const W = 260, H = 220;
+  const padL = 30, padR = 4, padT = 16, padB = 22;
+  const chartW = W - padL - padR;
+  const chartH = H - padT - padB;
+
+  const [animH, setAnimH] = useState(bars.map(() => 0));
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  const valToY = (v) => padT + chartH - (v / chartMax) * chartH;
+
+  useEffect(() => {
+    if (!active) {
+      setAnimH(bars.map(() => 0));
+      setShowTooltip(false);
+      return;
+    }
+
+    const timers = bars.map((bar, i) =>
+      setTimeout(() => {
+        const targetH = (bar.value / chartMax) * chartH;
+        const steps = 28;
+        const duration = 500;
+        let step = 0;
+        const id = setInterval(() => {
+          step++;
+          const eased = 1 - Math.pow(1 - step / steps, 3);
+          setAnimH(prev => {
+            const next = [...prev];
+            next[i] = targetH * eased;
+            return next;
+          });
+          if (step >= steps) clearInterval(id);
+        }, duration / steps);
+      }, i * 100)
+    );
+
+    const tt = setTimeout(() => setShowTooltip(true), 680);
+    return () => { timers.forEach(clearTimeout); clearTimeout(tt); };
+  }, [active]);
+
+  const gap = 6;
+  const slotW = chartW / bars.length;
+  const barW = slotW * 1 - gap;
+
+  const tipBar = bars[0];
+  const tipX = padL + slotW * 0.5;
+  const tipY = valToY(tipBar.value) - 12;
+  const tipW = 58, tipH = 18, tipR = 4;
+
+  return (
+    <div style={{
+      width: "100%", height: "100%",
+      background: "#fff",
+      borderRadius: 12,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      boxSizing: "border-box",
+      overflow: "hidden",
+    }}>
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        style={{ width: "100%", height: "100%", display: "block" }}
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <defs>
+          <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#4ade80" />
+            <stop offset="100%" stopColor="#16a34a" />
+          </linearGradient>
+        </defs>
+
+        {yLabels.map(({ label, value }) => {
+          const y = valToY(value);
+          return (
+            <g key={label} opacity={active ? 1 : 0} style={{ transition: active ? "opacity 0.4s ease 0.15s" : "none" }}>
+              <text x={padL - 4} y={y + 3} textAnchor="end" fontSize="7.5" fill="#94a3b8" fontFamily="sans-serif">{label}</text>
+              <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#d1d5db" strokeWidth="0.8" strokeDasharray="3 6" />
+            </g>
+          );
+        })}
+
+        {bars.map((bar, i) => {
+          const cx2 = padL + slotW * i + slotW / 2;
+          const bx = cx2 - barW / 2;
+          const bh = animH[i];
+          const by = padT + chartH - bh;
+
+          return (
+            <g key={bar.label}>
+              <rect x={bx} y={by} width={barW} height={bh} rx={2} ry={2} fill="url(#barGrad)" />
+              <text x={cx2} y={H - 6} textAnchor="middle" fontSize="7" fill="#94a3b8" fontFamily="sans-serif"
+                opacity={active ? 1 : 0}
+                style={{ transition: active ? `opacity 0.3s ease ${i * 0.1}s` : "none" }}>
+                {bar.label}
+              </text>
+            </g>
+          );
+        })}
+
+        {showTooltip && (
+          <g opacity={showTooltip ? 1 : 0} style={{ transition: "opacity 0.3s ease" }}>
+            <rect x={tipX - 4} y={tipY - tipH} width={tipW} height={tipH} rx={tipR} ry={tipR}
+              fill="#ffffff" stroke="#e5e7eb" strokeWidth="0.8"
+              filter="drop-shadow(0 1px 4px rgba(0,0,0,0.12))" />
+            <polygon points={`${tipX + 6},${tipY} ${tipX + 2},${tipY - 5} ${tipX + 10},${tipY - 5}`} fill="#ffffff" />
+            <text x={tipX + tipW / 2 - 4} y={tipY - tipH / 2 + 3} textAnchor="middle" fontSize="8" fontWeight="700" fill="#111827" fontFamily="sans-serif">
+              Rp75.000
+            </text>
+          </g>
+        )}
+      </svg>
+    </div>
+  );
+}
+
+function TrackMoneyCard({ isMobile }) {
   const [on, setOn] = useState(false);
+
+  const handlers = isMobile
+    ? { onClick: () => setOn(v => !v) }
+    : { onMouseEnter: () => setOn(true), onMouseLeave: () => setOn(false) };
+
   return (
     <div
-      onMouseEnter={() => setOn(true)}
-      onMouseLeave={() => setOn(false)}
+      {...handlers}
       style={{
         borderRadius: 20, overflow: "hidden", position: "relative",
-        height: "100%", background: "#fff", cursor: "default",
+        height: "100%", background: "#fff", cursor: "pointer",
         boxShadow: on ? "0 20px 48px rgba(0,0,0,0.18)" : "0 2px 16px rgba(0,0,0,0.07)",
         transform: on ? "translateY(-5px)" : "translateY(0)",
         transition: "transform 0.3s ease, box-shadow 0.3s ease",
       }}
     >
-      {/* Default */}
       <div style={{
         position: "absolute", inset: 0, padding: "22px 22px 18px",
         display: "flex", flexDirection: "column",
@@ -176,66 +295,57 @@ function TrackMoneyCard() {
             <span style={{ fontFamily: "'Syne',sans-serif", fontSize: 22, fontWeight: 900, color: "#fff" }}>
               Rp 500.000
             </span>
-            <div style={{ width: 20, height: 20, borderRadius: "50%", border: "1.5px solid rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
-            </div>
           </div>
         </div>
       </div>
-
-      {/* Hover: full image */}
       <div style={{
         position: "absolute", inset: 0,
         opacity: on ? 1 : 0, transform: on ? "scale(1)" : "scale(1.03)",
         transition: "opacity 0.3s, transform 0.3s",
         zIndex: 3,
       }}>
-        <Image
-          src="/images/Feature 1-2.png"
-          alt="Track Money"
-          fill
-          style={{ objectFit: "cover", objectPosition: "center top" }}
-          sizes="600px"
-          priority
-        />
+        <Image src="/images/Feature 1-2.png" alt="Track Money" fill style={{ objectFit: "cover", objectPosition: "center top" }} sizes="600px" priority />
       </div>
+      {isMobile && (
+        <div style={{
+          position: "absolute", bottom: 10, right: 10, zIndex: 10,
+          background: "rgba(0,0,0,0.4)", color: "#fff",
+          fontSize: 10, padding: "3px 8px", borderRadius: 6,
+        }}>
+          {on ? "Tutup" : "Tap untuk lihat"}
+        </div>
+      )}
     </div>
   );
 }
 
-function SpendingCard() {
+function SpendingCard({ isMobile }) {
   const [on, setOn] = useState(false);
+  const [savedTab, setSavedTab] = useState("donut");
   const [tab, setTab] = useState("donut");
 
-  useEffect(() => {
-    if (!on) setTab("donut");
-  }, [on]);
+  const handleOpen = () => { setTab(savedTab); setOn(true); };
+  const handleClose = () => { setSavedTab(tab); setOn(false); };
+  const handleTabChange = (newTab) => { setTab(newTab); setSavedTab(newTab); };
+
+  const handlers = isMobile
+    ? { onClick: () => on ? handleClose() : handleOpen() }
+    : { onMouseEnter: handleOpen, onMouseLeave: handleClose };
 
   return (
     <div
-      onMouseEnter={() => setOn(true)}
-      onMouseLeave={() => setOn(false)}
+      {...handlers}
       style={{
-        borderRadius: 20,
-        overflow: "hidden",
-        position: "relative",
-        height: "100%",
-        background: "#fff",
-        boxShadow: on
-          ? "0 20px 48px rgba(0,0,0,0.18)"
-          : "0 2px 16px rgba(0,0,0,0.07)",
+        borderRadius: 20, overflow: "hidden", position: "relative",
+        height: "100%", background: "#fff",
+        boxShadow: on ? "0 20px 48px rgba(0,0,0,0.18)" : "0 2px 16px rgba(0,0,0,0.07)",
         transform: on ? "translateY(-5px)" : "translateY(0)",
         transition: "transform 0.3s ease, box-shadow 0.3s ease",
-        cursor: "default",
+        cursor: "pointer",
       }}
     >
-      {/* Default: text + phone preview */}
       <div style={{
-        position: "absolute", inset: 0,
-        padding: "24px 22px",
+        position: "absolute", inset: 0, padding: "24px 22px",
         display: "flex", flexDirection: "column",
         opacity: on ? 0 : 1,
         transform: on ? "scale(0.97)" : "scale(1)",
@@ -250,17 +360,36 @@ function SpendingCard() {
           Trends & categories at a glance
         </p>
         <div style={{ flex: 1, position: "relative", borderRadius: 12, overflow: "hidden" }}>
-          <Image
-            src="/images/Feature 2-1.png"
-            alt="Spending preview"
-            fill
-            style={{ objectFit: "contain", objectPosition: "center" }}
-            sizes="300px"
-          />
+          {savedTab === "donut" ? (
+            <Image src="/images/Feature 2-1.png" alt="Spending preview" fill style={{ objectFit: "contain", objectPosition: "center" }} sizes="300px" />
+          ) : (
+            <div style={{
+              width: "100%", height: "100%",
+              background: "#ffffff", borderRadius: 12,
+              display: "flex", alignItems: "flex-end",
+              justifyContent: "center", gap: 6, padding: "16px 20px 20px",
+              boxSizing: "border-box",
+            }}>
+              {[25, 50, 63, 83, 97].map((h, i) => (
+                <div key={i} style={{
+                  flex: 1, height: `${h}%`,
+                  background: "linear-gradient(180deg, #4ade80 0%, #16a34a 100%)",
+                  borderRadius: "3px 3px 0 0",
+                }} />
+              ))}
+            </div>
+          )}
+          <div style={{
+            position: "absolute", top: 8, right: 8,
+            background: savedTab === "donut" ? "#ef4444" : "#22c55e",
+            color: "#fff", fontSize: 8, fontWeight: 700,
+            borderRadius: 4, padding: "2px 6px",
+          }}>
+            {savedTab === "donut" ? "Expense" : "Income"}
+          </div>
         </div>
       </div>
 
-      {/* Hover: tab UI */}
       <div style={{
         position: "absolute", inset: 0,
         background: "#fff",
@@ -270,29 +399,21 @@ function SpendingCard() {
         display: "flex", flexDirection: "column",
         pointerEvents: on ? "auto" : "none",
       }}>
-        {/* Tab bar */}
-        <div style={{
-          display: "flex",
-          borderBottom: "1px solid #e5e7eb",
-          flexShrink: 0,
-        }}>
+        <div style={{ display: "flex", borderBottom: "1px solid #e5e7eb", flexShrink: 0 }}
+          onClick={(e) => e.stopPropagation()}>
           {["Expense", "Income"].map(t => {
             const isActive = (t === "Expense" && tab === "donut") || (t === "Income" && tab === "bar");
             return (
               <button
                 key={t}
-                onClick={() => setTab(t === "Expense" ? "donut" : "bar")}
+                onClick={() => handleTabChange(t === "Expense" ? "donut" : "bar")}
                 style={{
-                  flex: 1,
-                  padding: "11px 0",
-                  fontSize: 12,
+                  flex: 1, padding: "11px 0", fontSize: 12,
                   fontWeight: isActive ? 700 : 400,
-                  color: isActive ? "#000000" : "rgba(0,0,0,0.38)",
-                  background: "none",
-                  border: "none",
-                  borderBottom: isActive ? "2.5px solid #000000" : "2.5px solid transparent",
-                  cursor: "pointer",
-                  marginBottom: "-1px",
+                  color: isActive ? "#000" : "rgba(0,0,0,0.38)",
+                  background: "none", border: "none",
+                  borderBottom: isActive ? "2.5px solid #000" : "2.5px solid transparent",
+                  cursor: "pointer", marginBottom: "-1px",
                   transition: "color 0.2s, border-color 0.2s",
                 }}
               >
@@ -302,7 +423,6 @@ function SpendingCard() {
           })}
         </div>
 
-        {/* Expense → Donut chart */}
         <div style={{
           position: "absolute", top: 44, left: 0, right: 0, bottom: 0,
           display: "flex", alignItems: "center", justifyContent: "center",
@@ -314,27 +434,22 @@ function SpendingCard() {
           <DonutChart active={on && tab === "donut"} />
         </div>
 
-        {/* Income → Bar chart image */}
         <div style={{
           position: "absolute", top: 44, left: 0, right: 0, bottom: 0,
           opacity: tab === "bar" ? 1 : 0,
           transition: "opacity 0.35s",
           pointerEvents: tab === "bar" ? "auto" : "none",
+          padding: 4,
+          display: "flex", alignItems: "stretch",
         }}>
-          <Image
-            src="/images/Feature 2-3.png"
-            alt="Bar chart"
-            fill
-            style={{ objectFit: "cover", objectPosition: "center" }}
-            sizes="600px"
-          />
+          <BarChart active={on && tab === "bar"} />
         </div>
       </div>
     </div>
   );
 }
 
-function ScanCard() {
+function ScanCard({ isMobile }) {
   const [on, setOn] = useState(false);
   const [scanPos, setScanPos] = useState(20);
 
@@ -345,19 +460,21 @@ function ScanCard() {
     return () => clearInterval(id);
   }, []);
 
+  const handlers = isMobile
+    ? { onClick: () => setOn(v => !v) }
+    : { onMouseEnter: () => setOn(true), onMouseLeave: () => setOn(false) };
+
   return (
     <div
-      onMouseEnter={() => setOn(true)}
-      onMouseLeave={() => setOn(false)}
+      {...handlers}
       style={{
         borderRadius: 20, overflow: "hidden", position: "relative",
-        height: "100%", background: "#fff", cursor: "default",
+        height: "100%", background: "#fff", cursor: "pointer",
         boxShadow: on ? "0 20px 48px rgba(0,0,0,0.18)" : "0 2px 16px rgba(0,0,0,0.07)",
         transform: on ? "translateY(-5px)" : "translateY(0)",
         transition: "transform 0.3s ease, box-shadow 0.3s ease",
       }}
     >
-      {/* Default */}
       <div style={{
         position: "absolute", inset: 0, padding: "22px 22px 18px",
         display: "flex", flexDirection: "column", alignItems: "center",
@@ -365,12 +482,8 @@ function ScanCard() {
         transition: "opacity 0.28s, transform 0.28s",
         pointerEvents: on ? "none" : "auto", zIndex: 2,
       }}>
-        <p style={{ fontSize: 13, fontWeight: 700, color: "#0a0e2a", textAlign: "center", marginBottom: 3 }}>
-          Scan & Log
-        </p>
-        <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginBottom: 16 }}>
-          Snap a receipt, done in seconds.
-        </p>
+        <p style={{ fontSize: 13, fontWeight: 700, color: "#0a0e2a", textAlign: "center", marginBottom: 3 }}>Scan & Log</p>
+        <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginBottom: 16 }}>Snap a receipt, done in seconds.</p>
         <div style={{
           width: 110, height: 188, borderRadius: 22,
           background: "#1a1a2e", border: "2.5px solid rgba(255,255,255,0.08)",
@@ -393,53 +506,39 @@ function ScanCard() {
               boxShadow: "0 0 8px rgba(59,130,246,0.7)",
               transition: "top 0.04s linear",
             }} />
-            <div style={{ position: "absolute", inset: 10, display: "flex", flexDirection: "column", gap: 4, justifyContent: "center" }}>
-              {[100, 60, 80, 45, 70].map((w, i) => (
-                <div key={i} style={{ height: 2.5, borderRadius: 2, background: `rgba(255,255,255,${0.08 + i * 0.04})`, width: `${w}%` }} />
-              ))}
-            </div>
           </div>
-          <p style={{ fontSize: 7, color: "rgba(255,255,255,0.2)", textAlign: "center", maxWidth: 76, lineHeight: 1.4 }}>
-            Align receipt within frame
-          </p>
-          <div style={{ position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)", width: 28, height: 3, borderRadius: 2, background: "rgba(255,255,255,0.15)" }} />
         </div>
       </div>
-
-      {/* Hover */}
       <div style={{
         position: "absolute", inset: 0,
         opacity: on ? 1 : 0, transform: on ? "scale(1)" : "scale(1.03)",
         transition: "opacity 0.3s, transform 0.3s",
         zIndex: 3,
       }}>
-        <Image
-          src="/images/Feature 3-2.png"
-          alt="Scan bills"
-          fill
-          style={{ objectFit: "cover", objectPosition: "center" }}
-          sizes="600px"
-        />
+        <Image src="/images/Feature 3-2.png" alt="Scan bills" fill style={{ objectFit: "cover", objectPosition: "center" }} sizes="600px" />
       </div>
     </div>
   );
 }
 
-function SplitCard() {
+function SplitCard({ isMobile }) {
   const [on, setOn] = useState(false);
+
+  const handlers = isMobile
+    ? { onClick: () => setOn(v => !v) }
+    : { onMouseEnter: () => setOn(true), onMouseLeave: () => setOn(false) };
+
   return (
     <div
-      onMouseEnter={() => setOn(true)}
-      onMouseLeave={() => setOn(false)}
+      {...handlers}
       style={{
         borderRadius: 20, overflow: "hidden", position: "relative",
-        height: "100%", background: "#fff", cursor: "default",
+        height: "100%", background: "#fff", cursor: "pointer",
         boxShadow: on ? "0 20px 48px rgba(0,0,0,0.18)" : "0 2px 16px rgba(0,0,0,0.07)",
         transform: on ? "translateY(-5px)" : "translateY(0)",
         transition: "transform 0.3s ease, box-shadow 0.3s ease",
       }}
     >
-      {/* Default */}
       <div style={{
         position: "absolute", inset: 0, padding: "22px 22px 18px",
         display: "flex", flexDirection: "column",
@@ -447,12 +546,8 @@ function SplitCard() {
         transition: "opacity 0.28s, transform 0.28s",
         pointerEvents: on ? "none" : "auto", zIndex: 2,
       }}>
-        <p style={{ fontSize: 13, fontWeight: 700, color: "#0a0e2a", textAlign: "center", marginBottom: 3 }}>
-          Split Bills Easily
-        </p>
-        <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginBottom: 14 }}>
-          Share expenses with friends and track who owes what
-        </p>
+        <p style={{ fontSize: 13, fontWeight: 700, color: "#0a0e2a", textAlign: "center", marginBottom: 3 }}>Split Bills Easily</p>
+        <p style={{ fontSize: 11, color: "#94a3b8", textAlign: "center", marginBottom: 14 }}>Share expenses with friends and track who owes what</p>
         <div style={{
           flex: 1, background: "#f8fafc", border: "1px solid #e5e7eb",
           borderRadius: 14, padding: "14px 16px",
@@ -464,7 +559,7 @@ function SplitCard() {
             {[
               { bg: "#fca5a5", l: "You", t: "Y" },
               { bg: "#93c5fd", l: "Minji", t: "M" },
-              { bg: "#fde68a", l: "Danielle", t: "D" }
+              { bg: "#fde68a", l: "Danielle", t: "D" },
             ].map(({ bg, l, t }) => (
               <div key={l} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
                 <div style={{ width: 36, height: 36, borderRadius: "50%", background: bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, color: "#fff" }}>{t}</div>
@@ -478,32 +573,19 @@ function SplitCard() {
           </div>
         </div>
       </div>
-
-      {/* Hover */}
       <div style={{
         position: "absolute", inset: 0,
         opacity: on ? 1 : 0, transform: on ? "scale(1)" : "scale(1.04)",
         transition: "opacity 0.3s, transform 0.3s",
         zIndex: 3,
       }}>
-        <Image
-          src="/images/Feature 4-2.png"
-          alt="Split bills"
-          fill
-          style={{ objectFit: "cover", objectPosition: "center" }}
-          sizes="600px"
-        />
+        <Image src="/images/Feature 4-2.png" alt="Split bills" fill style={{ objectFit: "cover", objectPosition: "center" }} sizes="600px" />
         <div style={{
           position: "absolute", inset: 0,
           background: "linear-gradient(0deg, rgba(10,14,42,0.7) 0%, rgba(10,14,42,0.1) 50%, transparent 100%)",
         }} />
-        <div style={{
-          position: "absolute", bottom: 18, left: 0, right: 0,
-          display: "flex", flexDirection: "column", alignItems: "center",
-        }}>
-          <p style={{ fontFamily: "'Syne',sans-serif", fontSize: 14, fontWeight: 800, color: "#fff", marginBottom: 3 }}>
-            Split with anyone
-          </p>
+        <div style={{ position: "absolute", bottom: 18, left: 0, right: 0, display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <p style={{ fontFamily: "'Syne',sans-serif", fontSize: 14, fontWeight: 800, color: "#fff", marginBottom: 3 }}>Split with anyone</p>
           <p style={{ fontSize: 11, color: "rgba(255,255,255,0.6)" }}>Track who paid and who owes</p>
         </div>
       </div>
@@ -513,6 +595,7 @@ function SplitCard() {
 
 export default function FeaturesSection() {
   const [sRef, inView] = useInView(0.06);
+  const isMobile = useIsMobile();
 
   return (
     <section
@@ -520,7 +603,7 @@ export default function FeaturesSection() {
       ref={sRef}
       style={{
         background: "#0a0e2a",
-        padding: "90px 64px 110px",
+        padding: isMobile ? "60px 20px 80px" : "90px 64px 110px",
         position: "relative", overflow: "hidden",
       }}
     >
@@ -533,13 +616,12 @@ export default function FeaturesSection() {
       }} />
 
       <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative" }}>
-        {/* Title */}
         <h2 style={{
           fontFamily: "'Syne',sans-serif",
-          fontSize: "clamp(28px,4vw,46px)",
+          fontSize: "clamp(24px,4vw,46px)",
           fontWeight: 900, textAlign: "center",
           color: "#fff", letterSpacing: "-0.02em",
-          marginBottom: 52,
+          marginBottom: isMobile ? 32 : 52,
           opacity: inView ? 1 : 0,
           transform: inView ? "translateY(0)" : "translateY(24px)",
           transition: "opacity 0.6s ease, transform 0.6s ease",
@@ -547,23 +629,28 @@ export default function FeaturesSection() {
           Features
         </h2>
 
-        {/* 2×2 grid */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gridTemplateRows: "320px 320px",
-          gap: 20,
+          gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+          gridTemplateRows: isMobile ? "auto" : "320px 320px",
+          gap: isMobile ? 16 : 20,
         }}>
-          {[TrackMoneyCard, SpendingCard, ScanCard, SplitCard].map((C, i) => (
+          {[
+            { C: TrackMoneyCard },
+            { C: SpendingCard },
+            { C: ScanCard },
+            { C: SplitCard },
+          ].map(({ C }, i) => (
             <div
               key={i}
               style={{
+                height: isMobile ? 280 : "100%",
                 opacity: inView ? 1 : 0,
                 transform: inView ? "translateY(0)" : "translateY(36px)",
                 transition: `opacity 0.6s ease ${i * 0.08}s, transform 0.6s ease ${i * 0.08}s`,
               }}
             >
-              <C />
+              <C isMobile={isMobile} />
             </div>
           ))}
         </div>
@@ -574,7 +661,7 @@ export default function FeaturesSection() {
           letterSpacing: "0.08em", textTransform: "uppercase",
           opacity: inView ? 1 : 0, transition: "opacity 0.8s ease 0.5s",
         }}>
-          Hover to explore
+          {isMobile ? "Tap untuk explore" : "Hover to explore"}
         </p>
       </div>
     </section>
